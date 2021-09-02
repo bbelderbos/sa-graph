@@ -30,7 +30,8 @@ Base.prepare()
 USER_TABLE = getattr(Base.classes, USER_TABLE_NAME)
 PROFILE_TABLE = getattr(Base.classes, PROFILE_TABLE_NAME)
 
-START_DATE = date(2020, 1, 1)
+LAST_YEAR = date.today().year - 1
+START_DATE = date(LAST_YEAR, 1, 1)
 COLORS = [
     "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA",
     "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
