@@ -44,12 +44,9 @@ def get_data():
     return sorted(cnt.items())
 
 
-def _roundup(number):
-    return int(math.ceil(number / 100.0)) * 100
-
-
-def _calc_max(values):
-    return _roundup(max(values))
+def calculate_max_height_graph(values):
+    max_value = max(values)
+    return int(math.ceil(max_value / 100.0)) * 100
 
 
 @app.route('/')
@@ -57,4 +54,5 @@ def show_data():
     data = get_data()
     labels, values = zip(*data)
     return render_template('index.html', title=f"{TABLE} - {COLUMN}",
-                           labels=labels, values=values, max=_calc_max(values))
+                           labels=labels, values=values,
+                           max_height=calculate_max_height_graph(values))
