@@ -1,4 +1,5 @@
 from collections import Counter
+from datetime import datetime
 import math
 import os
 
@@ -32,8 +33,12 @@ def get_data():
     users = session.query(col).all()
     cnt = Counter()
     for user in users:
-        date_joined = user[0]
-        cnt[date_joined.strftime("%Y-%m")] += 1
+        attr = user[0]
+
+        if isinstance(attr, datetime):
+            attr = attr.strftime("%Y-%m")
+
+        cnt[attr] += 1
     return sorted(cnt.items())
 
 
