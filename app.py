@@ -34,9 +34,7 @@ app = Flask(__name__, template_folder=TEMPLATE_FOLDER)
 
 def get_data():
     col = getattr(SA_TABLE, COLUMN)
-    rows = session.query(col).filter(
-        and_(col != None, col != '')  # noqa E711
-    )
+    rows = session.query(col).all()
     cnt = Counter()
     for row in rows:
         attr = row[0]
