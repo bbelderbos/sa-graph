@@ -4,7 +4,7 @@ import math
 import os
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine, MetaData, and_
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker
 from flask import Flask, render_template
@@ -30,10 +30,12 @@ SA_TABLE = getattr(Base.classes, TABLE)
 
 def get_data():
     col = getattr(SA_TABLE, COLUMN)
-    users = session.query(col).all()
+    rows = session.query(col).filter(
+        and_(col != None, col != '')  # noqa E711
+    )
     cnt = Counter()
-    for user in users:
-        attr = user[0]
+    for row in rows:
+        attr = row[0]
 
         if isinstance(attr, datetime):
             attr = attr.strftime("%Y-%m")
@@ -51,7 +53,7 @@ def _calc_max(values):
 
 
 @app.route('/')
-def show_user_acquisition():
+def show_data():
     data = get_data()
     labels, values = zip(*data)
     return render_template('index.html', title='New users on the platform',
