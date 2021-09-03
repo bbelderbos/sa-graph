@@ -56,5 +56,5 @@ def _calc_max(values):
 def show_data():
     data = get_data()
     labels, values = zip(*data)
-    return render_template('index.html', title='New users on the platform',
+    return render_template('index.html', title=f"{TABLE} - {COLUMN}",
                            labels=labels, values=values, max=_calc_max(values))
