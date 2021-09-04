@@ -1,5 +1,5 @@
 from collections import Counter
-from datetime import datetime
+from datetime import date, datetime
 from math import ceil
 import os
 
@@ -37,7 +37,7 @@ def get_data(table, column):
         if attr is None:
             continue
 
-        if isinstance(attr, datetime):
+        if isinstance(attr, (date, datetime)):
             attr = attr.strftime("%Y-%m")
 
         cnt[attr] += 1
