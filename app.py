@@ -55,7 +55,7 @@ def index():
 
 @app.route('/columns')
 def show_columns():
-    table_str = request.args.get("table")
+    table_str = request.args["table"]
     table = Base.classes.get(table_str)
     table_columns = {
         col: f"{table_str}{SEPARATOR}{col}" for col in
