@@ -34,6 +34,9 @@ def get_data(table, column):
     for row in rows:
         attr = row[0]
 
+        if attr is None:
+            continue
+
         if isinstance(attr, datetime):
             attr = attr.strftime("%Y-%m")
 
