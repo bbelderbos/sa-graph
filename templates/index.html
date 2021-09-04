@@ -18,8 +18,9 @@
           <div class="mui-select">
             <label >Table</label>
             <select name="table" hx-get="/columns" hx-target="#columns" hx-indicator=".htmx-indicator">
+              <option value="0">---</option>
               {% for table in tables %}
-              <option value="{{ table }}">{{ table }}</option>
+                <option value="{{ table }}">{{ table }}</option>
               {% endfor %}
             </select>
           </div>
