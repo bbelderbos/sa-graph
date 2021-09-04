@@ -1,0 +1,4 @@
+<option value="0">---</option>
+{% for col_name, table_column in table_columns %}
+  <option value="{{ table_column }}">{{ col_name }}</option>
+{% endfor %}

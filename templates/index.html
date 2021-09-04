@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>DB graph builder</title>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+  <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+  <link href="//cdn.muicss.com/mui-0.10.3/css/mui.min.css" rel="stylesheet" type="text/css" />
+  <script src="//cdn.muicss.com/mui-0.10.3/js/mui.min.js"></script>
+</head>
+
+<body>
+  <div class="mui-container-fluid">
+
+    <div class="mui-row">
+      <div class="mui-container">
+        <form class="mui-form--inline">
+          <div class="mui-select">
+            <label >Table</label>
+            <select name="table" hx-get="/columns" hx-target="#columns" hx-indicator=".htmx-indicator">
+              {% for table in tables %}
+              <option value="{{ table }}">{{ table }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mui-select">
+            <label>Column</label>
+            <select id="columns" name="tcolumn"
+              hx-get="/graph" hx-trigger="change"
+              hx-target="#graph"></select>
+          <div>
+        </form>
+      </div>
+    </div>
+
+    <div class="mui-row" id="graph"></div>
+
+  </div>
+
+</body>
+</html>

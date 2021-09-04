@@ -8,32 +8,30 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, MetaData, and_
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, request, abort
 
 load_dotenv()
 
 DATABASE_URL = os.environ["DATABASE_URL"]
-TABLE = os.environ["TABLE"]
-COLUMN = os.environ["COLUMN"]
+SEPARATOR = "++"
 TEMPLATE_FOLDER = "templates"
-DEFAULT_TEMPLATE = "line"
+DEFAULT_TEMPLATE = "index"
 
 engine = create_engine(DATABASE_URL)
 session = sessionmaker(engine)()
 
 metadata = MetaData()
-metadata.reflect(engine, only=[TABLE])
+metadata.reflect(engine)
 
 Base = automap_base(metadata=metadata)
 Base.prepare()
 
-SA_TABLE = getattr(Base.classes, TABLE)
-
 app = Flask(__name__, template_folder=TEMPLATE_FOLDER)
 
 
-def get_data():
-    col = getattr(SA_TABLE, COLUMN)
+def get_data(table, column):
+    SA_TABLE = getattr(Base.classes, table)
+    col = getattr(SA_TABLE, column)
     rows = session.query(col).all()
     cnt = Counter()
     for row in rows:
@@ -64,6 +62,35 @@ def get_colors(values):
     return islice(cycle(colors), len(values))
 
 
+@app.route('/columns')
+def show_columns():
+    table_str = request.args.get("table")
+    table = Base.classes.get(table_str)
+    table_columns = {
+        col: f"{table_str}{SEPARATOR}{col}" for col in
+        table.__table__.columns.keys()
+    }
+    return render_template(
+        '_columns.html',
+        table_columns=sorted(table_columns.items())
+    )
+
+
+@app.route('/graph')
+def build_graph():
+    tcolumn = request.args["tcolumn"]
+    table, column = tcolumn.split(SEPARATOR)
+    data = get_data(table, column)
+    labels, values = zip(*data)
+    max_height = calculate_max_height_graph(values)
+    return render_template(
+        '_graph.html',
+        labels=labels,
+        values=values,
+        max_height=max_height
+    )
+
+
 @app.route('/')
 @app.route('/<template_name>')
 def show_data(template_name=None):
@@ -71,7 +98,9 @@ def show_data(template_name=None):
     if not is_valid_template(template_name):
         abort(400, 'Not a valid template')
 
-    data = get_data()
+    table = "auth_user"
+    column = "date_joined"
+    data = get_data(table, column)
     labels, values = zip(*data)
     max_height = calculate_max_height_graph(values)
 
@@ -82,8 +111,12 @@ def show_data(template_name=None):
             "set": zip(values, labels, colors)
         }
 
+    tables = sorted(Base.classes.keys())
+
     return render_template(f'{template_name}.html',
-                           title=f"{TABLE} - {COLUMN}",
+                           #title=f"{TABLE} - {COLUMN}",
+                           title="my title",
+                           tables=tables,
                            labels=labels,
                            values=values,
                            max_height=max_height,
